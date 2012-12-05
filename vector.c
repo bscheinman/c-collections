@@ -60,7 +60,7 @@ void vector_insert(vector *v, void *item, size_t position) {
     size_t copy_size;
     assert(v && position <= v->count);
     if (v->count == v->capacity) {
-        vector_expand(v, (v->capacity * 3) / 2);
+        vector_expand(v, v->capacity * 2);
     }
     if (position < v->count) {
         copy_size = (v->count - position) * sizeof(void *);
