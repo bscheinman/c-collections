@@ -1,3 +1,6 @@
+#ifndef QUEUE_H
+#define QUEUE_H
+
 #include <stddef.h>
 
 typedef struct list_item {
@@ -19,3 +22,5 @@ void queue_push(linked_list *list, void* item);
 void *queue_pop(linked_list *list);
 void stack_push(linked_list *list, void *item);
 void *stack_pop(linked_list *list);
+
+#endif /* #ifndef QUEUE_H */

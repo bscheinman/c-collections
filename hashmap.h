@@ -1,3 +1,6 @@
+#ifndef HASHMAP_H
+#define HASHMAP_H
+
 #include <stdbool.h>
 #include <stddef.h>
 
@@ -29,3 +32,5 @@ bool map_remove(hash_map *map, int key);
 bool map_contains_key(hash_map *map, int key);
 void display_map(hash_map *map);
 void display_entry(map_entry *entry);
+
+#endif /* #ifndef HASHMAP_H */

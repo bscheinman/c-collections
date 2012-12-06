@@ -1,3 +1,6 @@
+#ifndef VECTOR_H
+#define VECTOR_H
+
 #include <stddef.h>
 
 typedef struct {
@@ -16,3 +19,5 @@ void vector_expand(vector *v, size_t size);
 void *vector_nth(vector *v, size_t n);
 void vector_clear(vector *v);
 void vector_display(vector *v);
+
+#endif /* #ifndef VECTOR_H */
