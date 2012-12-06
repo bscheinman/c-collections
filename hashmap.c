@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int get_hash(hash_map *map, int value) {
+int get_hash(const hash_map *map, int value) {
     assert(map);
     return value % map->bin_count;
 }
@@ -148,7 +148,7 @@ bool map_remove(hash_map *map, int key) {
 }
 
 
-bool map_contains_key(hash_map *map, int key) {
+bool map_get_value(const hash_map *map, int key, int *output) {
     map_entry *entry;
     int hash_index;
     assert(map);
@@ -156,6 +156,9 @@ bool map_contains_key(hash_map *map, int key) {
     entry = map->entries[hash_index];
     while (entry) {
         if (entry->pair.key == key) {
+            if (output) {
+                *output = entry->pair.value;
+            }
             return true;
         }
         entry = entry->next;
@@ -164,7 +167,7 @@ bool map_contains_key(hash_map *map, int key) {
 }
 
 
-void display_map(hash_map *map) {
+void display_map(const hash_map *map) {
     map_entry *entry;
     int i;
     assert(map);
@@ -185,7 +188,7 @@ void display_map(hash_map *map) {
 }
 
 
-void display_entry(map_entry *entry) {
+void display_entry(const map_entry *entry) {
     assert(entry);
     printf("%i: %i", entry->pair.key, entry->pair.value);
 }
