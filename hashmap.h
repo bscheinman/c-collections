@@ -5,8 +5,8 @@
 #include <stddef.h>
 
 typedef struct {
-    int key;
-    int value;
+    const void *key;
+    const void *value;
 } kv_pair;
 
 typedef struct entry {
@@ -14,22 +14,34 @@ typedef struct entry {
     struct entry *next;
 } map_entry;
 
+typedef size_t (*hash_function)(const void *);
+typedef bool (*compare_function)(const void *, const void *);
 typedef struct {
+    hash_function hash_fxn;
+    compare_function compare_fxn;
     map_entry** entries;
     size_t bin_count;
     size_t item_count;
 } hash_map;
 
 
-int get_hash(const hash_map *map, int value);
-hash_map *create_map(size_t initial_capacity);
+size_t int_hash(const void *key);
+size_t str_hash(const void *key);
+
+bool int_compare(const void *k1, const void *k2);
+bool str_compare(const void *k1, const void *k2);
+
+size_t get_hash(const hash_map *map, const void *value);
+hash_map *create_map(size_t initial_capacity, hash_function hash_fxn, compare_function compare_fxn);
+#define int_map(capacity) create_map(capacity, int_hash, int_compare)
+#define str_map(capacity) create_map(capacity, str_hash, str_compare)
 void dispose_map(hash_map *map);
-map_entry *create_entry(int key, int value);
+map_entry *create_entry(const void *key, const void *value);
 bool map_expand_bins(hash_map *map, size_t nbins);
 
-bool map_insert(hash_map *map, int key, int value);
-bool map_remove(hash_map *map, int key);
-bool map_get_value(const hash_map *map, int key, int *output);
+bool map_insert(hash_map *map, const void *key, const void *value);
+bool map_remove(hash_map *map, const void *key);
+bool map_get_value(const hash_map *map, const void *key, const void **output);
 #define map_contains_key(map, key) map_get_value(map, key, NULL)
 void display_map(const hash_map *map);
 void display_entry(const map_entry *entry);

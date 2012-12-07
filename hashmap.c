@@ -2,20 +2,59 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-int get_hash(const hash_map *map, int value) {
-    assert(map);
-    return value % map->bin_count;
+
+size_t int_hash(const void *key) {
+    return (size_t) key;
 }
 
-hash_map *create_map(size_t initial_capacity) {
+
+size_t str_hash(const void *key) {
+    size_t hash = 0;
+    const char *str = (const char *) key;
+    if (!str) {
+        return 0;
+    }
+    while (*str != '\0') {
+        hash += *str;
+        hash *= 31;
+        ++str;
+    }
+    return hash;
+}
+
+
+bool int_compare(const void *k1, const void *k2) {
+    return k1 == k2;
+}
+
+
+bool str_compare(const void *k1, const void *k2) {
+    return strcmp(k1, k2) == 0;
+}
+
+
+size_t get_hash(const hash_map *map, const void *value) {
+    assert(map);
+    return map->hash_fxn(value) % map->bin_count;
+}
+
+
+hash_map *create_map(size_t initial_capacity, hash_function hash_fxn, compare_function compare_fxn) {
     hash_map *map;
-    assert(initial_capacity);
+    assert(initial_capacity && hash_fxn && compare_fxn);
     map = malloc(sizeof(hash_map));
     if (map) {
         map->entries = calloc(initial_capacity, sizeof(map_entry *));
+        if (map->entries == NULL) {
+            free(map);
+            return NULL;
+        }
         map->bin_count = initial_capacity;
         map->item_count = 0;
+        map->hash_fxn = hash_fxn;
+        map->compare_fxn = compare_fxn;
     }
     return map;
 }
@@ -23,7 +62,7 @@ hash_map *create_map(size_t initial_capacity) {
 
 void dispose_map(hash_map *map) {
     map_entry *entry, *last_entry;
-    int i;
+    size_t i;
     assert(map);
     for (i = 0 ; i < map->bin_count ; ++i) {
         entry = map->entries[i];
@@ -37,7 +76,7 @@ void dispose_map(hash_map *map) {
 }
 
 
-map_entry *create_entry(int key, int value) {
+map_entry *create_entry(const void *key, const void *value) {
     map_entry *entry = malloc(sizeof(map_entry));
     if (entry) {
         entry->pair.key = key;
@@ -49,7 +88,7 @@ map_entry *create_entry(int key, int value) {
 
 bool map_expand_bins(hash_map *map, size_t nbins) {
     map_entry *entry, **old_entries;
-    int i;
+    size_t i;
     size_t old_bin_count;
     bool success = true;
     assert(map && nbins);
@@ -80,7 +119,7 @@ expansion_finished:
 }
 
 
-bool map_insert(hash_map *map, int key, int value) {
+bool map_insert(hash_map *map, const void *key, const void *value) {
     size_t hash_index;
     map_entry *new_entry, *parent_entry;
     bool success = false;
@@ -94,13 +133,13 @@ bool map_insert(hash_map *map, int key, int value) {
 
     parent_entry = map->entries[hash_index];
     if (parent_entry) {
-        if (parent_entry->pair.key == key) {
+        if (map->compare_fxn(parent_entry->pair.key, key)) {
             success = false;
             goto insert_finished;
         }
         while (parent_entry->next) {
             parent_entry = parent_entry->next;
-            if (parent_entry->pair.key == key) {
+            if (map->compare_fxn(parent_entry->pair.key, key)) {
                 success = false;
                 goto insert_finished;
             }
@@ -121,15 +160,15 @@ insert_finished:
 }
 
 
-bool map_remove(hash_map *map, int key) {
+bool map_remove(hash_map *map, const void *key) {
     map_entry *entry, *parent_entry;
-    int hash_index;
+    size_t hash_index;
     assert(map);
     hash_index = get_hash(map, key);
     entry = map->entries[hash_index];
     parent_entry = NULL;
     while (entry) {
-        if (entry->pair.key == key) {
+        if (map->compare_fxn(entry->pair.key, key)) {
             if (parent_entry) {
                 parent_entry->next = entry->next;
             } else if (entry-> next) {
@@ -148,14 +187,14 @@ bool map_remove(hash_map *map, int key) {
 }
 
 
-bool map_get_value(const hash_map *map, int key, int *output) {
+bool map_get_value(const hash_map *map, const void *key, const void **output) {
     map_entry *entry;
-    int hash_index;
+    size_t hash_index;
     assert(map);
     hash_index = get_hash(map, key);
     entry = map->entries[hash_index];
     while (entry) {
-        if (entry->pair.key == key) {
+        if (map->compare_fxn(entry->pair.key, key)) {
             if (output) {
                 *output = entry->pair.value;
             }
@@ -169,7 +208,7 @@ bool map_get_value(const hash_map *map, int key, int *output) {
 
 void display_map(const hash_map *map) {
     map_entry *entry;
-    int i;
+    size_t i;
     assert(map);
     
     for (i = 0 ; i < map->bin_count ; ++i) {
