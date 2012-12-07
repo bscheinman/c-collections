@@ -4,42 +4,42 @@
 #include <stdlib.h>
 #include <string.h>
 
-void vector_initialize(vector *v, size_t capacity) {
-    assert(v);
-    v->count = 0;
-    v->capacity = capacity;
-    v->items = malloc(capacity * sizeof(void *));
-}
-
-
-void vector_dispose(vector *v) {
-    void *item;
-    int index;
-    assert(v);
-    for (index = 0 ; index < v->count ; ++index) {
-        item = vector_nth(v, index);
-        free(item);
+vector *create_vector(size_t capacity) {
+    vector *v = malloc(sizeof(vector));
+    if (v) {
+        v->count = 0;
+        v->capacity = capacity;
+        v->items = malloc(capacity * sizeof(void *));
+        if (!v->items) {
+            free(v);
+        }
     }
-    vector_clear(v);
+    return v;
 }
 
 
-void vector_append(vector *v, void *item) {
+bool vector_append(vector *v, void *item) {
     assert(v);
-    if (v->count == v->capacity) {
-        vector_expand(v, v->capacity * 2);
+    if (v->count == v->capacity && !vector_expand(v, v->capacity * 2)) {
+        return false;
     }
     v->items[v->count++] = item;
+    return true;
 }
 
 
-void vector_expand(vector *v, size_t size) {
+bool vector_expand(vector *v, size_t size) {
+    void **old_items;
     assert(v);
-    if (size <= v->count) {
-        return;
+    old_items = v->items;
+    v->items = realloc(v->items, size * sizeof(void *));
+    if (v->items) {
+        v->capacity = size;
+        return true;
+    } else {
+        v->items = old_items;
+        return false;
     }
-    v->items = realloc(v->items, size);
-    v->capacity = size;
 }
 
 
@@ -51,16 +51,15 @@ void *vector_nth(vector *v, size_t n) {
 
 void vector_clear(vector *v) {
     assert(v);
-    memset(v->items, 0, v->count);
     v->count = 0;
 }
 
 
-void vector_insert(vector *v, void *item, size_t position) {
+bool vector_insert(vector *v, void *item, size_t position) {
     size_t copy_size;
     assert(v && position <= v->count);
-    if (v->count == v->capacity) {
-        vector_expand(v, v->capacity * 2);
+    if (v->count == v->capacity && !vector_expand(v, v->capacity * 2)) {
+        return false;
     }
     if (position < v->count) {
         copy_size = (v->count - position) * sizeof(void *);
@@ -68,6 +67,7 @@ void vector_insert(vector *v, void *item, size_t position) {
         ++v->count;
     }
     v->items[position] = item;
+    return true;
 }
 
 

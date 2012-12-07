@@ -3,8 +3,7 @@
 #include <stdlib.h>
 
 int main(int argc, char **argv) {
-    vector *v = (vector *)malloc(sizeof(vector));
-    vector_initialize(v, 2);
+    vector *v = create_vector(2);
     vector_display(v);
     printf("appending foo, bar, and baz\n");
     vector_append(v, (void *) "foo");
@@ -27,6 +26,6 @@ int main(int argc, char **argv) {
     vector_clear(v);
     vector_display(v);
 
-    vector_dispose(v);
+    free(v);
     return 0;
 }

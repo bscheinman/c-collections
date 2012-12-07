@@ -1,6 +1,7 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
+#include <stdbool.h>
 #include <stddef.h>
 
 typedef struct {
@@ -9,13 +10,12 @@ typedef struct {
     void **items;
 } vector;
 
-void vector_initialize(vector *v, size_t capacity);
-void vector_dispose(vector *v);
-void vector_append(vector *v, void *item);
-void vector_insert(vector *v, void *item, size_t position);
+vector *create_vector(size_t capacity);
+bool vector_append(vector *v, void *item);
+bool vector_insert(vector *v, void *item, size_t position);
 void vector_remove(vector *v, size_t position);
 void vector_replace(vector *v, void *item, size_t position);
-void vector_expand(vector *v, size_t size);
+bool vector_expand(vector *v, size_t size);
 void *vector_nth(vector *v, size_t n);
 void vector_clear(vector *v);
 void vector_display(vector *v);
