@@ -26,7 +26,7 @@ void list_dispose(linked_list *list) {
 
 list_item *create_item(void) {
     list_item *item = malloc(sizeof(list_item));
-    if (item != NULL) {
+    if (item) {
         item->val = NULL;
         item->next = NULL;
     }

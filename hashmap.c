@@ -47,7 +47,7 @@ hash_map *create_map(size_t initial_capacity, hash_function hash_fxn, compare_fu
     map = malloc(sizeof(hash_map));
     if (map) {
         map->entries = calloc(initial_capacity, sizeof(map_entry *));
-        if (map->entries == NULL) {
+        if (!map->entries) {
             free(map);
             return NULL;
         }
@@ -96,7 +96,7 @@ bool map_expand_bins(hash_map *map, size_t nbins) {
     old_bin_count = map->bin_count;
     map->entries = calloc(nbins, sizeof(map_entry *));
     map->bin_count = nbins;
-    if (map->entries == NULL) {
+    if (!map->entries) {
         success = false;
         goto expansion_finished;
     }
@@ -127,7 +127,7 @@ bool map_insert(hash_map *map, const void *key, const void *value) {
     hash_index = get_hash(map, key);
 
     new_entry = create_entry(key, value);
-    if (new_entry == NULL) {
+    if (!new_entry) {
         return false;
     }
 
@@ -214,7 +214,7 @@ void display_map(const hash_map *map) {
     for (i = 0 ; i < map->bin_count ; ++i) {
         entry = map->entries[i];
         printf("Bin %i:\n", i);
-        if (entry == NULL) {
+        if (!entry) {
             printf("\t<EMPTY>\n");
         }
         while (entry) {

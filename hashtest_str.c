@@ -12,7 +12,7 @@ int main() {
     s = malloc(4 * sizeof(char));
     strncpy(s, "foo", 4);
     map_get_value(map, s, &value);
-    printf("%i", value);
+    printf("%i\n", value);
 
     display_map(map);
 }
