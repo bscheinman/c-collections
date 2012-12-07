@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-ansi -pedantic -Wall -O0 -g
+CFLAGS=-ansi -pedantic -Wall -Werror -O0 -g
 
 all: vectest queuetest hashtest hashtest_str
 
@@ -21,10 +21,10 @@ vectest.o: vectest.c
 queuetest.o: queuetest.c
 	$(CC) $(CFLAGS) -c queuetest.c -o $@
 
-hashtest.o: hashmap.c
-	$(CC) $(CFLAGS) -c hashtest.c -o $@
+hashtest.o: hashtest.c hashmap.c
+	$(CC) $(CFLAGS) -c hashtest.c -o $@ -Wno-error=int-to-pointer-cast
 
-hashtest_str.o: hashmap.c
+hashtest_str.o: hashtest_str.c hashmap.c
 	$(CC) $(CFLAGS) -c hashtest_str.c -o $@
 
 vector.o: vector.h vector.c
