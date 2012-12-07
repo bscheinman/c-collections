@@ -213,7 +213,7 @@ void display_map(const hash_map *map) {
     
     for (i = 0 ; i < map->bin_count ; ++i) {
         entry = map->entries[i];
-        printf("Bin %i:\n", i);
+        printf("Bin %p:\n", (void *) i);
         if (!entry) {
             printf("\t<EMPTY>\n");
         }
@@ -229,5 +229,5 @@ void display_map(const hash_map *map) {
 
 void display_entry(const map_entry *entry) {
     assert(entry);
-    printf("%i: %i", entry->pair.key, entry->pair.value);
+    printf("%p: %p", entry->pair.key, entry->pair.value);
 }
