@@ -31,6 +31,9 @@ bool vector_append(vector *v, void *item) {
 bool vector_expand(vector *v, size_t size) {
     void **old_items;
     assert(v);
+    if (size < v->count) {
+        return false;
+    }
     old_items = v->items;
     v->items = realloc(v->items, size * sizeof(void *));
     if (v->items) {
