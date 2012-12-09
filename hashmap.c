@@ -72,6 +72,7 @@ void dispose_map(hash_map *map) {
             free(last_entry);
         }
     }
+    free(map->entries);
     free(map);
 }
 
