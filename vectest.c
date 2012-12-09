@@ -26,6 +26,6 @@ int main(int argc, char **argv) {
     vector_clear(v);
     vector_display(v);
 
-    free(v);
+    vector_dispose(v);
     return 0;
 }

@@ -18,6 +18,15 @@ vector *create_vector(size_t capacity) {
 }
 
 
+void vector_dispose(vector *v) {
+    if (!v) {
+        return;
+    }
+    free(v->items);
+    free(v);
+}
+
+
 bool vector_append(vector *v, void *item) {
     assert(v);
     if (v->count == v->capacity && !vector_expand(v, v->capacity * 2)) {
@@ -46,7 +55,7 @@ bool vector_expand(vector *v, size_t size) {
 }
 
 
-void *vector_nth(vector *v, size_t n) {
+void *vector_nth(const vector *v, size_t n) {
     assert(v && n < v->count);
     return v->items[n];
 }
@@ -90,7 +99,7 @@ void vector_replace(vector *v, void *item, size_t position) {
     v->items[position] = item;
 }
 
-void vector_display(vector *v) {
+void vector_display(const vector *v) {
     size_t index;
     assert(v);
     printf("%d items:\n", (int)v->count);
