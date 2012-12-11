@@ -5,7 +5,7 @@
 
 
 int main() {
-    hash_map *map = str_map(10);
+    hash_map *map = typed_map(str, str, 10);
     const void *value;
     char *s;
     map_insert(map, "foo", "abc");

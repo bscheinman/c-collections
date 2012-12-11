@@ -78,7 +78,8 @@ hash_map *create_map(
         size_t initial_capacity,
         hash_function hash_fxn, 
         compare_function compare_fxn,
-        copy_function copy_fxn) {
+        copy_function key_copy_fxn,
+        copy_function value_copy_fxn) {
     hash_map *map;
     assert(initial_capacity && hash_fxn && compare_fxn);
     map = malloc(sizeof(hash_map));
@@ -92,7 +93,8 @@ hash_map *create_map(
         map->item_count = 0;
         map->hash_fxn = hash_fxn;
         map->compare_fxn = compare_fxn;
-        map->copy_fxn = copy_fxn;
+        map->key_copy_fxn = key_copy_fxn;
+        map->value_copy_fxn = value_copy_fxn;
     }
     return map;
 }
@@ -106,13 +108,13 @@ map_entry *create_entry(const hash_map *map, const void *key, const void *value)
     if (!entry) {
         return NULL;
     }
-    copy = map->copy_fxn(key);
+    copy = map->key_copy_fxn(key);
     if (key && !copy) {
         success = false;
         goto create_entry_finished;
     }
     entry->pair.key = copy;
-    copy = map->copy_fxn(value);
+    copy = map->value_copy_fxn(value);
     if (value && !copy) {
         success = false;
         goto create_entry_finished;

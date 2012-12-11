@@ -10,7 +10,7 @@ int main() {
     hash_map *map;
 
     srand(time(NULL));
-    map = int_map(10);
+    map = typed_map(int, int, 10);
     for (i = 0 ; i <= 100 ; ++i) {
         key = rand() % 100;
         value =  rand () % 100;

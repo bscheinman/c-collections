@@ -20,7 +20,8 @@ typedef void *(*copy_function)(const void *);
 typedef struct {
     hash_function hash_fxn;
     compare_function compare_fxn;
-    copy_function copy_fxn;
+    copy_function key_copy_fxn;
+    copy_function value_copy_fxn;
     map_entry** entries;
     size_t bin_count;
     size_t item_count;
@@ -42,9 +43,13 @@ hash_map *create_map(
     size_t initial_capacity,
     hash_function hash_fxn, 
     compare_function compare_fxn,
-    copy_function copy_fxn);
-#define int_map(capacity) create_map(capacity, int_hash, int_compare, int_copy)
-#define str_map(capacity) create_map(capacity, str_hash, str_compare, str_copy)
+    copy_function key_copy_fxn,
+    copy_function value_copy_fxn);
+#define typed_map(tkey, tvalue, capacity) create_map(   capacity,\
+                                                        tkey##_hash,\
+                                                        tkey##_compare,\
+                                                        tkey##_copy,\
+                                                        tvalue##_copy)
 map_entry *create_entry(const hash_map *map, const void *key, const void *value);
 void dispose_map(hash_map *map);
 map_entry *dispose_entry(map_entry *entry);
