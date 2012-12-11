@@ -4,16 +4,6 @@
 #include <time.h>
 
 
-void search_for_key(const hash_map *map, const void *key) {
-    const void *value;
-    if (map_get_value(map, key, &value)) {
-        printf("Did not find value for key %p", key);
-    } else {
-
-    }
-}
-
-
 int main() {
     size_t i;
     int key, value;

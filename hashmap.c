@@ -231,7 +231,7 @@ insert_finished:
     if (success) {
         ++map->item_count;
     } else {
-        free(new_entry);
+        dispose_entry(new_entry);
     }
     return success;
 }
