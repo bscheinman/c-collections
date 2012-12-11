@@ -22,7 +22,7 @@ queuetest.o: queuetest.c
 	$(CC) $(CFLAGS) -c queuetest.c -o $@
 
 hashtest.o: hashtest.c hashmap.c
-	$(CC) $(CFLAGS) -c hashtest.c -o $@ -Wno-error=int-to-pointer-cast
+	$(CC) $(CFLAGS) -c hashtest.c -o $@
 
 hashtest_str.o: hashtest_str.c hashmap.c
 	$(CC) $(CFLAGS) -c hashtest_str.c -o $@

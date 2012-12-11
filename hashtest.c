@@ -16,15 +16,15 @@ void search_for_key(const hash_map *map, const void *key) {
 
 int main() {
     size_t i;
-    void *key, *value;
+    int key, value;
     hash_map *map;
 
     srand(time(NULL));
     map = int_map(10);
     for (i = 0 ; i <= 100 ; ++i) {
-        key = (void *) (rand() % 100);
-        value = (void *) (rand () % 100);
-        map_insert(map, key, value);
+        key = rand() % 100;
+        value =  rand () % 100;
+        map_insert(map, &key, &value);
     }
     display_map(map);
     dispose_map(map);
