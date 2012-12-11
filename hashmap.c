@@ -320,5 +320,5 @@ void display_map(const hash_map *map) {
 
 void display_entry(const map_entry *entry) {
     assert(entry);
-    printf("%i: %i", *(int *)entry->pair.key, *(int *)entry->pair.value);
+    printf("%p: %p", entry->pair.key, entry->pair.value);
 }
