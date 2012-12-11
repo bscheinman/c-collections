@@ -17,5 +17,7 @@ int main() {
     printf("%s\n", (const char*) value);
 
     display_map(map);
+    dispose_map(map);
+    free(s);
     return 0;
 }
