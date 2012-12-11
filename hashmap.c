@@ -81,7 +81,7 @@ hash_map *create_map(
         copy_function key_copy_fxn,
         copy_function value_copy_fxn) {
     hash_map *map;
-    assert(initial_capacity && hash_fxn && compare_fxn);
+    assert(initial_capacity && hash_fxn && compare_fxn && key_copy_fxn && value_copy_fxn);
     map = malloc(sizeof(hash_map));
     if (map) {
         map->entries = calloc(initial_capacity, sizeof(map_entry *));
