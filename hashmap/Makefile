@@ -8,4 +8,5 @@ hashmap.o: hashmap.h hashmap.c
 	$(CC) $(CFLAGS) -c hashmap.c -o $@
 
 clean:
+	rm -f *.o
 	$(MAKE) -C ./test clean
