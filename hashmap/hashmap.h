@@ -25,8 +25,12 @@ typedef struct {
     map_entry** entries;
     size_t bin_count;
     size_t item_count;
-    bool free_elements;
+    double load_factor;
+    bool auto_expand;
 } hash_map;
+
+#define DEFAULT_LOAD_FACTOR 0.75
+#define DEFAULT_AUTO_EXPAND true
 
 
 size_t int_hash(const void *key);
@@ -55,7 +59,9 @@ void dispose_map(hash_map *map);
 map_entry *dispose_entry(map_entry *entry);
 bool map_expand_bins(hash_map *map, size_t nbins);
 
-bool map_insert(hash_map *map, const void *key, const void *value);
+bool map_insert_impl(hash_map *map, const void *key, const void *value, bool overwrite);
+#define map_insert(map, key, value) map_insert_impl(map, key, value, false)
+#define map_update(map, key, value) map_insert_impl(map, key, value, true)
 bool map_remove(hash_map *map, const void *key);
 bool map_get_value(const hash_map *map, const void *key, const void **output);
 #define map_contains_key(map, key) map_get_value(map, key, NULL)

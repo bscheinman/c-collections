@@ -95,6 +95,8 @@ hash_map *create_map(
         map->compare_fxn = compare_fxn;
         map->key_copy_fxn = key_copy_fxn;
         map->value_copy_fxn = value_copy_fxn;
+        map->load_factor = DEFAULT_LOAD_FACTOR;
+        map->auto_expand = DEFAULT_AUTO_EXPAND;
     }
     return map;
 }
@@ -198,10 +200,11 @@ expansion_finished:
 }
 
 
-bool map_insert(hash_map *map, const void *key, const void *value) {
+bool map_insert_impl(hash_map *map, const void *key, const void *value, bool overwrite) {
     size_t hash_index;
     map_entry *new_entry, *parent_entry;
-    bool success = false;
+    void *new_value;
+    bool success;
     assert(map);
     hash_index = get_hash(map, key);
 
@@ -212,16 +215,27 @@ bool map_insert(hash_map *map, const void *key, const void *value) {
 
     parent_entry = map->entries[hash_index];
     if (parent_entry) {
-        if (map->compare_fxn(parent_entry->pair.key, key)) {
-            success = false;
-            goto insert_finished;
-        }
-        while (parent_entry->next) {
-            parent_entry = parent_entry->next;
+        for (;;) {
             if (map->compare_fxn(parent_entry->pair.key, key)) {
-                success = false;
-                goto insert_finished;
+                if (overwrite) {
+                    new_value = map->value_copy_fxn(value);
+                    if (value && !new_value) {
+                        success = false;
+                    } else {
+                        free(parent_entry->pair.value);
+                        parent_entry->pair.value = new_entry;
+                        success = true;
+                    }
+                    goto insert_finished;
+                } else {
+                    success = false;
+                    goto insert_finished;
+                }
             }
+            if (!parent_entry->next) {
+                break;
+            }
+            parent_entry = parent_entry->next;
         }
         parent_entry->next = new_entry;
         success = true;
@@ -231,7 +245,9 @@ bool map_insert(hash_map *map, const void *key, const void *value) {
     }
 insert_finished:
     if (success) {
-        ++map->item_count;
+        if ((((double) ++map->item_count ) / map->bin_count) >= map->load_factor && map->auto_expand) {
+            map_expand_bins(map, map->bin_count * 2);
+        }
     } else {
         dispose_entry(new_entry);
     }
