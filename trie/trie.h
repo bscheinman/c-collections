@@ -7,13 +7,16 @@
 
 typedef struct trie {
     struct trie *children[ALPHABET_SIZE];
+    unsigned is_word:1;
 } trie;
 
 
 trie *trie_init(void);
 bool trie_insert(trie *, char *);
 bool trie_contains(trie *, char *);
-void trie_print(trie *, char *prefix);
+
+/* if print_all is true, print internal, non-word nodes as well */
+void trie_print(trie *, char *prefix, bool print_all);
 void trie_dispose(trie *);
 
 

@@ -10,6 +10,7 @@ trie *trie_init(void)
 {
     trie *t = malloc(sizeof(trie));
     if (!t) return NULL;
+    t->is_word = 0;
     memset(t->children, 0, sizeof(t->children));
     return t;
 }
@@ -40,8 +41,13 @@ bool trie_insert(trie *t, char *s)
         trie_created = true;
     }
 
-    /* if this is the last character of the string, we only "inserted" if we created a new child */
+    /* if this is the last character of the string, we only "inserted" if we created a new child... */
     if (*(s + 1) == '\0') {
+        /* ... or if the appropriate internal node wasn't marked as a word yet */
+        trie_created |= !((*next)->is_word);
+
+        /* either way, mark the target node as a word */
+        (*next)->is_word = 1;
         return trie_created;
     } else { /* otherwise, continue downwards in the trie */
         result = trie_insert(*next, s + 1);
@@ -61,8 +67,9 @@ bool trie_contains(trie *t, char *s)
     trie *child;
     char c = tolower(*s);
 
-    /* if we've reached the end of the string, then it must be contained in the trie */
-    if (!t || c == '\0') return true;
+    /* if we've reached the end of the string, then this is the node that corresponds
+       to the original word and so we should check that node to see whether it's a word*/
+    if (!t || c == '\0') return t->is_word;
 
     /* the trie cannot contain non-alphabetic strings */
     if (c < 'a' || c > 'z') return false;
@@ -78,7 +85,7 @@ bool trie_contains(trie *t, char *s)
 }
 
 
-void trie_print(trie *t, char *prefix)
+void trie_print(trie *t, char *prefix, bool print_all)
 {
     size_t prefix_length = strlen(prefix);
     char *entry = malloc(sizeof(char) * (prefix_length + 2));
@@ -91,8 +98,10 @@ void trie_print(trie *t, char *prefix)
         child = t->children + i;
         if (*child) {
             entry[prefix_length] = 'a' + i;
-            printf("%s\n", entry);
-            trie_print(*child, entry);
+            if (print_all || (*child)->is_word) {
+                printf("%s\n", entry);
+            }
+            trie_print(*child, entry, print_all);
         }
     }
     free(entry);
