@@ -1,15 +1,15 @@
 #include "trie.h"
 
 #include <ctype.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 
-trie *trie_init(char c)
+trie *trie_init(void)
 {
     trie *t = malloc(sizeof(trie));
     if (!t) return NULL;
-    t->c = c;
     memset(t->children, 0, sizeof(t->children));
     return t;
 }
@@ -22,6 +22,9 @@ bool trie_insert(trie *t, char *s)
     bool trie_created = false, result;
 
     c = tolower(*s);
+
+    /* this won't be reached recursively but we can consider the empty string to
+       be trivially contained in every trie */
     if (c == '\0') return true;
 
     /* reject strings with non-alphabetic characters */
@@ -32,7 +35,7 @@ bool trie_insert(trie *t, char *s)
 
     /* create new child if necessary */
     if (!*next) {
-        *next = trie_init(c);
+        *next = trie_init();
         if (!*next) return false;
         trie_created = true;
     }
@@ -72,6 +75,27 @@ bool trie_contains(trie *t, char *s)
     /* otherwise, check child node */
     return trie_contains(child, s + 1);
 
+}
+
+
+void trie_print(trie *t, char *prefix)
+{
+    size_t prefix_length = strlen(prefix);
+    char *entry = malloc(sizeof(char) * (prefix_length + 2));
+    trie **child;
+    int i;
+    
+    strcpy(entry, prefix);
+    entry[prefix_length + 1] = '\0';
+    for (i = 0 ; i < ALPHABET_SIZE ; ++i) {
+        child = t->children + i;
+        if (*child) {
+            entry[prefix_length] = 'a' + i;
+            printf("%s\n", entry);
+            trie_print(*child, entry);
+        }
+    }
+    free(entry);
 }
 
 

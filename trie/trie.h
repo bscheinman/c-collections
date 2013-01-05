@@ -6,14 +6,14 @@
 #define ALPHABET_SIZE 26
 
 typedef struct trie {
-    char c;
     struct trie *children[ALPHABET_SIZE];
 } trie;
 
 
-trie *trie_init(char);
+trie *trie_init(void);
 bool trie_insert(trie *, char *);
 bool trie_contains(trie *, char *);
+void trie_print(trie *, char *prefix);
 void trie_dispose(trie *);
 
 
