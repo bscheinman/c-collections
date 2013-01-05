@@ -44,7 +44,7 @@ bool trie_insert(trie *t, char *s)
     if (*(s + 1) == '\0') {
         return trie_created;
     } else { /* otherwise, continue downwards in the trie */
-        result = trie_insert(t, s + 1);
+        result = trie_insert(*next, s + 1);
         if (!result && trie_created) {
             /* if recursive insert failed and the child node was created just for this entry, remove it */
             free(*next);
