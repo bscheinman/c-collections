@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-vector *create_vector(size_t capacity) {
+vector *vector_init(size_t capacity) {
     vector *v = malloc(sizeof(vector));
     if (v) {
         v->count = 0;

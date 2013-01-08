@@ -3,10 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void list_initialize(linked_list *list) {
-    assert(list);
+linked_list *list_init(void) {
+    linked_list *list = malloc(sizeof(linked_list));
+    if (!list) return NULL;
     list->head = NULL;
     list->tail = NULL;
+    return list;
 }
 
 
@@ -60,6 +62,10 @@ void list_clear(linked_list *list) {
     list->head = NULL;
     list->tail = NULL;
 }
+
+
+bool list_empty(linked_list *list)
+    { return list->head == NULL; }
 
 
 void queue_push(linked_list *list, void *val) {

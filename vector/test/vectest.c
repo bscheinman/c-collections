@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 int main(int argc, char **argv) {
-    vector *v = create_vector(2);
+    vector *v = vector_init(2);
     vector_display(v);
     printf("appending foo, bar, and baz\n");
     vector_append(v, "foo");

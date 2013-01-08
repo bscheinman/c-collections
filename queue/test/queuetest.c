@@ -3,9 +3,8 @@
 #include <stdlib.h>
 
 int main(int argc, char **argv) {
-    linked_list *list = malloc(sizeof(linked_list));
+    linked_list *list = list_init();
     void *val;
-    list_initialize(list);
     
     printf("pushing \"foo\", \"bar\", \"baz\", and \"asdf\" into a queue\n");
     queue_push(list, (void *)"foo");
